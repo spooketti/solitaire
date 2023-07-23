@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbit&display=swap');
+html,body
+{
+    height:100%;
+    width:100%;
+    font-family: 'Orbit', sans-serif;
+}
+
+body
+{
+background-color: black;
+}
+
+#game
+{
+  height:100%;
+  width:100%;  
+}
+
+.card
+{
+
+    background-color: white;
+    position: absolute;
+    
+}
+
+.topLNumber
+{
+position: absolute;
+top:0%;
+left:0%;
+user-select: none;
+pointer-events: none;
+}
+
+.bottomRNumber
+{
+position: absolute;
+bottom: 0%;
+right:0%;
+transform: rotate(180deg);
+user-select: none;
+pointer-events: none;
+}
+
+.suite
+{
+    position: absolute;
+    top:10%;
+    left:25%;
+    font-size: 500%;
+    user-select: none;
+    pointer-events: none;
+}
+
+.cardDimension
+{
+    height:150px;
+    width:100px;
+    border-radius: 5%;
+    
+}
+
+.card .card
+{
+    background-color: green;
+}
+
+.A
+{
+    justify-content: center;
+    align-items: center;
+    font-size: 500%;
+    display:flex;
+    color:white;
+    user-select: none;
+    border: 1px solid white;
+}
+
+#drawCard
+{
+    justify-content: center;
+    align-items: center;
+    font-size: 500%;
+    display:flex;
+    color:white;
+    border: 1px solid white;
+    background-image:url("back.jpg");
+    background-size: cover;
+}
+
+
+#placeable_area
+{
+    display: grid;
+    grid-template-columns: repeat(7,1fr);
+    grid-template-rows: repeat(2,1fr);
+    width:10%;
+    gap:25px;
+}
+
