@@ -22,7 +22,7 @@ background-color: black;
 
     background-color: white;
     position: absolute;
-    
+    background-size: cover;
 }
 
 .topLNumber
