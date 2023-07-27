@@ -360,6 +360,12 @@ document.addEventListener("mouseup",function(e)
                 target.appendChild(cardRef)
 
             }
+            if(unrevealedParent.id == "drawPile")
+            {
+                cardPool.splice(currentDraw,1)
+                console.log(cardPool)
+                currentDraw--
+            }
             if(unrevealedParent.dataset.unrevealed)
             {
                 let savedCardData = unrevealedParent.id
