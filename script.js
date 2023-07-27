@@ -348,8 +348,9 @@ document.addEventListener("mouseup",function(e)
                 }
                 if(unrevealedParent.id == "drawPile")
     {
-        currentDraw--
+        
         cardPool.splice(currentDraw,1)
+        currentDraw--
         console.log(cardPool)
     }
               //  cardRef.classList.remove("card")
