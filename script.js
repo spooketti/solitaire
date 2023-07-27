@@ -142,14 +142,7 @@ function generateGame()
         createCard(cardChooser(),element,true)
        
     }
-    let newArr = [];
-
-
-for(let i = 0; i < cardPool.length; i++)
-{
-    newArr = newArr.concat(cardPool[i]);
-}
-cardPool = newArr.slice()
+   
 cardPool.sort(() => Math.random() - 0.5); 
 console.log(cardPool)
 }
