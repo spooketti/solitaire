@@ -13,8 +13,10 @@ let cardDict =
 }
 //let wholeSuite = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"] flash back to the time this pointed to a memory address :)))
 //to do: 
-//querySelector() and element to see if it has children and if so troll this user
-//use a while loop to find deepest node in a binary tree (dom tree)
+//querySelector() and element to see if it has children and if so troll this user (finish game intialization) qjery selecot working?
+//make revearl code
+//king ssyttem (win and droppin into slot class)
+//remove card from pool and probably remove the while lop
 let cardPool = 
 [
     ["dA","d2","d3","d4","d5","d6","d7","d8","d9","d10","dJ","dQ","dK"],
@@ -122,9 +124,9 @@ function cardChooser()
     let suiteChoice = Math.round(Math.random() * (max - min) + min)
     let chosenCard = 0
     let cardChoice = 0
-    while(cardPool[suiteChoice].length <= 0)
+    while(cardPool[suiteChoice].length <= 0) //wtf does this do: im pretty sure this is supposed to check if the slot we chose has no cards
     {
-        suiteChoice = Math.round(Math.random() * (max - min) + min)
+       suiteChoice = Math.round(Math.random() * (max - min) + min)
     }
     cardChoice = Math.floor(Math.random() * cardPool[suiteChoice].length)
     chosenCard = cardPool[suiteChoice][cardChoice];
@@ -138,32 +140,18 @@ function cardChooser()
 function generateGame() 
 { 
    
-    for(let i=0;i<7;i++)
+    for(let i=0;i<7;i++) //slot iteration
     {
         let card = document.createElement("div")
         card.classList.add("cardDimension")
         card.classList.add("card")
         let slot = document.getElementById("slot"+i.toString())
-     /*   for(let y=0;y<i;y++)
+        let element = slot
+        for(let y=0;y<i;y++) //card iteration
         {
-            if(slot.lastElementChild)
-            {
-                createCard(cardChooser(),slot.lastElementChild,false)
-            }
-            else
-            {
-                createCard(cardChooser(),slot,false)
-            }
-            
-        }*/
-        if(slot.lastElementChild)
-        {
-            createCard(cardChooser(),slot.lastElementChild,true)
+            element = createCard(cardChooser(),element,false) 
         }
-        else
-        {
-            createCard(cardChooser(),slot,true)
-        }
+        createCard(cardChooser(),element,true)
        
     }
     let newArr = [];
@@ -231,6 +219,61 @@ document.addEventListener("mousedown",function(e)
     }
 })
 
+function oppStack(target,cardRef)
+{
+    cardRef.style.pointerEvents = "auto"
+    let unrevealedParent = cardRef.parentElement
+    let UPSave = unrevealedParent.parentElement
+    
+    if(target.dataset.trueValue && parseInt(target.dataset.trueValue) != parseInt(cardRef.dataset.trueValue)+1)
+    {
+        //cardRef.style.pointerEvents = "auto"
+        return
+    }
+    
+     let savedCardData = cardRef.cloneNode(true)
+     cardRef.remove()
+     cardRef = savedCardData
+    cardRef.style.top = "30%"
+    cardRef.style.left = 0
+    target.appendChild(cardRef)
+
+    if(unrevealedParent.dataset.unrevealed)
+    {
+        let savedCardData = unrevealedParent.id
+        unrevealedParent.remove()
+        unrevealedParent = createCard(savedCardData,UPSave,true)
+        UPSave.appendChild(unrevealedParent)
+                zindex++
+                unrevealedParent.style.zIndex = zindex
+    }
+}
+
+function sameStack(target,cardRef)
+{
+    cardRef.style.pointerEvents = "auto"
+    let unrevealedParent = cardRef.parentElement
+    let UPSave = unrevealedParent.parentElement
+  
+    if(target.parentElement.dataset.suite=="A" && target.id.charAt(0) == cardRef.id.charAt(0) && parseInt(target.dataset.trueValue) == parseInt(cardRef.dataset.trueValue)-1 && cardRef.querySelector(".card") == null)
+    {
+        let savedCardData = cardRef.id
+        cardRef.remove()
+        cardRef = createCard(savedCardData,target,true)
+        target.parentElement.appendChild(cardRef)
+                zindex++
+                cardRef.style.zIndex = zindex
+    }
+    if(unrevealedParent.dataset.unrevealed)
+    {
+        let savedCardData = unrevealedParent.id
+        unrevealedParent.remove()
+        unrevealedParent = createCard(savedCardData,UPSave,true)
+        UPSave.appendChild(unrevealedParent)
+                zindex++
+                unrevealedParent.style.zIndex = zindex
+    }
+}
 document.addEventListener("mouseup",function(e)
 {
     let cardRef = selectedCard
@@ -250,29 +293,11 @@ document.addEventListener("mouseup",function(e)
             switch(cardRef.dataset.suite)
             {
                 case "red":
-                    if(target.dataset.trueValue && parseInt(e.target.dataset.trueValue) != parseInt(cardRef.dataset.trueValue)+1)
-                    {
-                        cardRef.style.pointerEvents = "auto"
-                        return
-                    }
-                     let savedCardData = cardRef.cloneNode(true)
-                     cardRef.remove()
-                     cardRef = savedCardData
-                    cardRef.style.top = "30%"
-                    cardRef.style.left = 0
-                    target.appendChild(cardRef)
+                   oppStack(target,cardRef)
 
                 break;
                 case "black":
-                    if(target.parentElement.dataset.suite=="A" && target.id.charAt(0) == cardRef.id.charAt(0) && parseInt(target.dataset.trueValue) == parseInt(cardRef.dataset.trueValue)-1)
-                    {
-                        let savedCardData = cardRef.id
-                        cardRef.remove()
-                        cardRef = createCard(savedCardData,target,true)
-                        target.parentElement.appendChild(cardRef)
-                                zindex++
-                                cardRef.style.zIndex = zindex
-                    } //replace with a "callback" that sends the card back to it's og slot (and do the dataset check)
+                    sameStack(target,cardRef)//replace with a "callback" that sends the card back to it's og slot (and do the dataset check)
                 break;
             }
         break;
@@ -280,40 +305,35 @@ document.addEventListener("mouseup",function(e)
             switch(cardRef.dataset.suite)
             {
                 case "black":
-                    if(e.target.dataset.trueValue && parseInt(e.target.dataset.trueValue) != parseInt(cardRef.dataset.trueValue)+1)
-                    {
-                        cardRef.style.pointerEvents = "auto"
-                        return
-                    }
-                    let savedCardData = cardRef.cloneNode(true)
-                    cardRef.remove()
-                    cardRef = savedCardData
-                    cardRef.style.top = "30%"
-                    cardRef.style.left = 0
-                    target.appendChild(cardRef)
+                   oppStack(target,cardRef)
                 break;
                 case "red":
-                    if(target.parentElement.dataset.suite=="A" && target.id.charAt(0) == cardRef.id.charAt(0) && parseInt(target.dataset.trueValue) == parseInt(cardRef.dataset.trueValue)-1)
-                    {
-                let savedCardData = cardRef.id
-                cardRef.remove()
-                cardRef = createCard(savedCardData,target,true)
-                target.parentElement.appendChild(cardRef)
-                        zindex++
-                        cardRef.style.zIndex = zindex
-                    }
+                   sameStack(target,cardRef)
                 break;
             }
         break;
         case "A":
+            let unrevealedParent = cardRef.parentElement
             if(cardRef.dataset.trueValue == "1")
             {
+                let UPSave = unrevealedParent.parentElement
+
                 target.classList.remove("A")
                 target.innerText = null
                 let savedCardData = cardRef.id
                 cardRef.remove()
                 cardRef = createCard(savedCardData,e.target,true)
                 target.appendChild(cardRef)
+
+                if(unrevealedParent.dataset.unrevealed)
+                {
+                    let savedCardData = unrevealedParent.id
+                    unrevealedParent.remove()
+                    unrevealedParent = createCard(savedCardData,UPSave,true)
+                    UPSave.appendChild(unrevealedParent)
+                            zindex++
+                            unrevealedParent.style.zIndex = zindex
+                }
                
               //  cardRef.classList.remove("card")
                // cardRef.stye.left = e.target.style.left
@@ -323,6 +343,14 @@ document.addEventListener("mouseup",function(e)
                 
 
             }
+        break;
+        case "slot":
+        {
+            if(cardRef.dataset.trueValue == "13")
+            {
+                
+            }
+        }
         break;
 
     }
