@@ -23,6 +23,7 @@ background-color: black;
     background-color: white;
     position: absolute;
     background-size: cover;
+    border: 1px solid black;
 }
 
 .topLNumber
