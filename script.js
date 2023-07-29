@@ -11,6 +11,9 @@ let cardDict =
     "Q":12,
     "K":13
 }
+let cardReturnSound = new Audio("./sounds/cardReturnSound.mp3")
+let cardPlace = new Audio("./sounds/cardPlace.mp3")
+let cardReveal = new Audio("./sounds/cardReveal.mp3")
 //let wholeSuite = ["A","2","3","4","5","6","7","8","9","10","J","Q","K"] flash back to the time this pointed to a memory address :)))
 //to do: 
 //querySelector() and element to see if it has children and if so troll this user (finish game intialization) qjery selecot working?
@@ -172,6 +175,7 @@ function drawCard()
          {
              drawPile.removeChild(drawPile.lastElementChild)
          }
+         cardReturnSound.play()
         return;
     }
     
@@ -225,6 +229,7 @@ function oppStack(target,cardRef)
     target.appendChild(cardRef)
     zindex++
     unrevealedParent.style.zIndex = zindex
+    cardPlace.play()
 
     if(unrevealedParent.dataset.unrevealed)
     {
@@ -232,6 +237,7 @@ function oppStack(target,cardRef)
         unrevealedParent.remove()
         unrevealedParent = createCard(savedCardData,UPSave,true)
         UPSave.appendChild(unrevealedParent)
+        cardReveal.play()
                 zindex++
                 unrevealedParent.style.zIndex = zindex
     }
@@ -246,6 +252,7 @@ function oppStack(target,cardRef)
 
 function returnCard(cardRef)
 {
+    
     if(cardRef.parentElement.id == "drawPile" || cardRef.parentElement.dataset.suite == "slot")
     {
         cardRef.style.left = null
@@ -280,6 +287,7 @@ function sameStack(target,cardRef)
         target.parentElement.appendChild(cardRef)
                 zindex++
                 cardRef.style.zIndex = zindex
+                cardPlace.play()
     }
     if(unrevealedParent.id == "drawPile")
     {
@@ -295,6 +303,7 @@ function sameStack(target,cardRef)
         UPSave.appendChild(unrevealedParent)
                 zindex++
                 unrevealedParent.style.zIndex = zindex
+                cardReveal.play()
     }
     
 }
