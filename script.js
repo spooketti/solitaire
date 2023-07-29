@@ -18,7 +18,6 @@ let cardDict =
 //king ssyttem (win and droppin into slot class)
 //remove card from pool and probably remove the while lop
 //double click
-//draw pile is append instead of cardCreate
 let cardPool = ["dA","d2","d3","d4","d5","d6","d7","d8","d9","d10","dJ","dQ","dK","cA","c2","c3","c4","c5","c6","c7","c8","c9","c10","cJ","cQ","cK","hA","h2","h3","h4","h5","h6","h7","h8","h9","h10","hJ","hQ","hK","sA","s2","s3","s4","s5","s6","s7","s8","s9","s10","sJ","sQ","sK"]
 
 
@@ -107,11 +106,13 @@ function createCard(cardData,slot,revealed)
     {
         card.style.backgroundImage = 'url("back.jpg")'
         card.dataset.unrevealed="active"
+        card.draggable = false
         return card
     }
     card.appendChild(suiteDiv)
     card.appendChild(tLN)
     card.appendChild(bRN)
+    card.draggable = false
     return card
 }
 function cardChooser()
@@ -153,10 +154,7 @@ generateGame()
 function drawCard()
 {
     currentDraw++
-    while(drawPile.childElementCount > 0)
-    {
-        drawPile.removeChild(drawPile.lastElementChild)
-    }
+   
     
     if(currentDraw == cardPool.length-1)
     {
@@ -169,10 +167,15 @@ function drawCard()
         drawCardDiv.style.backgroundImage = 'url("back.jpg")';
         // createCard(cardPool[currentDraw],drawPile)
          currentDraw = -1
+         while(drawPile.childElementCount > 0)
+         {
+             drawPile.removeChild(drawPile.lastElementChild)
+         }
         return;
     }
     
     createCard(cardPool[currentDraw],drawPile,true)
+   
 }
 
 /*
@@ -206,9 +209,10 @@ function oppStack(target,cardRef)
     let unrevealedParent = cardRef.parentElement
     let UPSave = unrevealedParent.parentElement
     
-    if(target.dataset.trueValue && parseInt(target.dataset.trueValue) != parseInt(cardRef.dataset.trueValue)+1)
+    if(target.dataset.trueValue && parseInt(target.dataset.trueValue) != parseInt(cardRef.dataset.trueValue)+1 || target.parentElement.dataset.suite == "A" || target.parentElement.id == "drawPile" || target.dataset.unrevealed)
     {
         //cardRef.style.pointerEvents = "auto"
+        returnCard(cardRef)
         return
     }
     
@@ -218,6 +222,8 @@ function oppStack(target,cardRef)
     cardRef.style.top = "30%"
     cardRef.style.left = null
     target.appendChild(cardRef)
+    zindex++
+    unrevealedParent.style.zIndex = zindex
 
     if(unrevealedParent.dataset.unrevealed)
     {
@@ -234,6 +240,21 @@ function oppStack(target,cardRef)
         currentDraw--
         console.log(cardPool)
     }
+    
+}
+
+function returnCard(cardRef)
+{
+    if(cardRef.parentElement.id == "drawPile" || cardRef.parentElement.dataset.suite == "slot")
+    {
+        cardRef.style.left = null
+        cardRef.style.top = null
+    }
+    else
+    {
+        cardRef.style.left = null
+        cardRef.style.top = "30%"
+    }
 }
 
 function sameStack(target,cardRef)
@@ -241,6 +262,13 @@ function sameStack(target,cardRef)
     cardRef.style.pointerEvents = "auto"
     let unrevealedParent = cardRef.parentElement
     let UPSave = unrevealedParent.parentElement
+
+    if(target.parentElement.id == "drawPile" || target.dataset.unrevealed || parseInt(target.dataset.trueValue) != parseInt(cardRef.dataset.trueValue)-1)
+    {
+        //cardRef.style.pointerEvents = "auto"
+        returnCard(cardRef)
+        return
+    }
     
     if(target.parentElement.dataset.suite=="A" && target.id.charAt(0) == cardRef.id.charAt(0) && parseInt(target.dataset.trueValue) == parseInt(cardRef.dataset.trueValue)-1 && cardRef.querySelector(".card") == null)
     {
@@ -272,6 +300,9 @@ function sameStack(target,cardRef)
 document.addEventListener("mouseup",function(e)
 {
     let cardRef = selectedCard
+   // let ogzindex = cardRef.style.zindex
+   // let ogPosition = [cardRef.style.left,cardRef.style.top]
+
     stopDragging()
     //console.log(selectedCard)
     if(cardRef == null)
@@ -320,14 +351,15 @@ document.addEventListener("mouseup",function(e)
                 cardRef = createCard(savedCardData,target,true)
                 target.appendChild(cardRef)
 
+
                 if(unrevealedParent.dataset.unrevealed)
                 {
                     let savedCardData = unrevealedParent.id
                     unrevealedParent.remove()
                     unrevealedParent = createCard(savedCardData,UPSave,true)
                     UPSave.appendChild(unrevealedParent)
-                            zindex++
-                            unrevealedParent.style.zIndex = zindex
+                          //  zindex++
+                            //unrevealedParent.style.zIndex = zindex
                 }
                 if(unrevealedParent.id == "drawPile")
     {
@@ -342,24 +374,33 @@ document.addEventListener("mouseup",function(e)
                // cardRef.style.left = (e.target.offsetLeft - cardRef.offsetLeft) + 'px';
                 
                 
-
+               zindex++
+               unrevealedParent.style.zIndex = zindex
             }
+            else
+            {
+                returnCard(cardRef)
+            }
+            
         break;
         case "slot":
         {
             cardRef.style.pointerEvents = "auto"
             let unrevealedParent = cardRef.parentElement
             let UPSave = unrevealedParent.parentElement
-            if(cardRef.dataset.trueValue == "13")
+            if(cardRef.dataset.trueValue != "13")
             {
-                let savedCardData = cardRef.cloneNode(true)
-                cardRef.remove()
-                cardRef = savedCardData
-                cardRef.style.top = null
-                cardRef.style.left = null
-                target.appendChild(cardRef)
-
+                returnCard(cardRef)
+                break;
             }
+            let savedCardData = cardRef.cloneNode(true)
+            cardRef.remove()
+            cardRef = savedCardData
+            cardRef.style.top = null
+            cardRef.style.left = null
+            target.appendChild(cardRef)
+            zindex++
+            unrevealedParent.style.zIndex = zindex
             if(unrevealedParent.id == "drawPile")
             {
                 cardPool.splice(currentDraw,1)
@@ -375,7 +416,11 @@ document.addEventListener("mouseup",function(e)
                         zindex++
                         unrevealedParent.style.zIndex = zindex
             }
-        }
+        }        
+        break;
+        default:
+           returnCard(cardRef)
+            
         break;
 
     }

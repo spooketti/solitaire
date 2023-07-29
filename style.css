@@ -66,6 +66,7 @@ pointer-events: none;
 .card .card
 {
     top:30%;
+    left:0;
 }
 
 .A
